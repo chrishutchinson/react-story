@@ -1,10 +1,16 @@
 import React from "react";
 
 export default ({ state, handlers }) => (
-  <button
-    disabled={state.activePage === state.pageCount}
-    onClick={() => handlers.setActivePage(state.activePage + 1)}
+  <div
+    style={{
+      alignSelf: "flex-start"
+    }}
   >
-    +1
-  </button>
+    <button
+      disabled={state.activePage === state.pageCount}
+      onClick={() => handlers.setActivePage(state.activePage + 1)}
+    >
+      +1
+    </button>
+  </div>
 );

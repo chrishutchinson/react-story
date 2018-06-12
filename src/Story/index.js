@@ -78,33 +78,23 @@ class Story extends React.Component {
         <aside
           style={{
             position: "fixed",
+            top: 0,
+            left: 0,
             width: "100%",
-            top: "50%",
+            height: "100%",
             display: "flex",
             flexDirection: "column",
             alignContent: "space-between"
           }}
         >
-          <div
-            style={{
-              alignSelf: "flex-start"
-            }}
-          >
-            {previousButton({
-              state: this.state,
-              handlers
-            })}
-          </div>
-          <div
-            style={{
-              alignSelf: "flex-end"
-            }}
-          >
-            {nextButton({
-              state: this.state,
-              handlers
-            })}
-          </div>
+          {previousButton({
+            state: this.state,
+            handlers
+          })}
+          {nextButton({
+            state: this.state,
+            handlers
+          })}
         </aside>
 
         <aside>

@@ -6,6 +6,21 @@ import ReactDOM from "react-dom";
 
 import Story, { Page, StoryContext } from "./Story";
 
+const NextButton = ({ state, handlers }) => (
+  <button
+    style={{
+      width: "70%",
+      height: "100%",
+      background: "transparent",
+      border: 0
+    }}
+    disabled={state.activePage === state.pageCount}
+    onClick={() => handlers.setActivePage(state.activePage + 1)}
+  >
+    Tap to proceed
+  </button>
+);
+
 const MyPage = ({ children, pageIndex }) => (
   <StoryContext.Consumer>
     {args =>
@@ -24,7 +39,7 @@ const computeOpacity = (isActive, isOutbound, isInbound) => {
 };
 
 const SampleStory = () => (
-  <Story outboundDelay={400}>
+  <Story nextButton={NextButton} outboundDelay={0}>
     <MyPage>
       {({ pageIndex, activePage }) => (
         <div
@@ -34,7 +49,7 @@ const SampleStory = () => (
             left: 0,
             width: "100%",
             height: "100%",
-            backgroundColor: pageIndex === activePage ? "red" : "green"
+            backgroundColor: "red"
           }}
         >
           1
@@ -52,7 +67,6 @@ const SampleStory = () => (
             width: "100%",
             height: "100%",
             backgroundColor: "#FFF",
-
             transitionProperty: "opacity",
             transitionDuration: "0.4s",
             opacity: computeOpacity(isActive, isOutbound, isInbound)
