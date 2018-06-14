@@ -2,18 +2,22 @@ import React from "react";
 
 import PreviousButton from "../PreviousButton";
 import NextButton from "../NextButton";
+import ProgressIndicator from "../ProgressIndicator";
+
+import styles from "./style";
 
 export const StoryContext = React.createContext();
 
 class Story extends React.Component {
   static defaultProps = {
-    nextButton: props => <NextButton {...props} />,
-    previousButton: props => <PreviousButton {...props} />,
+    nextButton: NextButton,
+    previousButton: PreviousButton,
+    progressIndicator: ProgressIndicator,
     outboundDelay: 0
   };
 
   state = {
-    activePage: 1,
+    activePage: 0,
     outboundPage: null
   };
 
@@ -39,14 +43,44 @@ class Story extends React.Component {
   };
 
   componentDidMount() {
-    const { children } = this.props;
+    const { children, enableKeyboardControls } = this.props;
+
     this.setState(() => ({
       pageCount: React.Children.count(children)
     }));
+
+    setTimeout(() => {
+      this.setState({
+        activePage: 1
+      });
+    }, 0);
+
+    if (typeof document !== "undefined" && enableKeyboardControls) {
+      document.addEventListener("keypress", e => {
+        const { key } = e;
+
+        switch (key) {
+          case "ArrowRight":
+            e.preventDefault();
+            this.setActivePage(this.state.activePage + 1);
+            break;
+          case "ArrowLeft":
+            e.preventDefault();
+            this.setActivePage(this.state.activePage - 1);
+            break;
+        }
+      });
+    }
   }
 
   render() {
-    const { children, nextButton, previousButton, outboundDelay } = this.props;
+    const {
+      children,
+      nextButton: Next,
+      previousButton: Previous,
+      progressIndicator: ProgressIndicator,
+      outboundDelay
+    } = this.props;
     const { activePage, pageCount, inboundPage, outboundPage } = this.state;
 
     const handlers = {
@@ -61,13 +95,7 @@ class Story extends React.Component {
           inboundPage
         }}
       >
-        <main
-          style={{
-            position: "relative",
-            width: "100%",
-            height: "100%"
-          }}
-        >
+        <main style={styles.story()}>
           {React.Children.map(children, (c, index) =>
             React.cloneElement(c, {
               pageIndex: index + 1
@@ -75,30 +103,13 @@ class Story extends React.Component {
           )}
         </main>
 
-        <aside
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            alignContent: "space-between"
-          }}
-        >
-          {previousButton({
-            state: this.state,
-            handlers
-          })}
-          {nextButton({
-            state: this.state,
-            handlers
-          })}
+        <aside style={styles.controls()}>
+          <Previous {...this.state} handlers={handlers} />
+          <Next {...this.state} handlers={handlers} />
         </aside>
 
-        <aside>
-          {activePage}/{pageCount}
+        <aside style={styles.progress()}>
+          <ProgressIndicator {...this.state} handlers={handlers} />
         </aside>
       </StoryContext.Provider>
     );
@@ -107,7 +118,7 @@ class Story extends React.Component {
 
 export default Story;
 
-export const Page = ({ pageIndex, children }) => (
+export const Page = ({ pageIndex, style, className, children }) => (
   <StoryContext.Consumer>
     {({ activePage, outboundPage, inboundPage }) => {
       const isActive = pageIndex === activePage;
@@ -115,13 +126,19 @@ export const Page = ({ pageIndex, children }) => (
       const isInbound = pageIndex === inboundPage;
 
       return (
-        <React.Fragment>
+        <div
+          className={className}
+          style={{
+            ...styles.page({ isActive }),
+            ...style
+          }}
+        >
           {children({
             isActive,
             isOutbound,
             isInbound
           })}
-        </React.Fragment>
+        </div>
       );
     }}
   </StoryContext.Consumer>
