@@ -13,12 +13,14 @@ class Story extends React.Component {
     nextButton: NextButton,
     previousButton: PreviousButton,
     progressIndicator: ProgressIndicator,
-    outboundDelay: 0
+    outboundDelay: 0,
+    theme: "dark"
   };
 
   state = {
     activePage: 0,
-    outboundPage: null
+    outboundPage: null,
+    theme: "dark"
   };
 
   setActivePage = nextPage => {
@@ -43,10 +45,11 @@ class Story extends React.Component {
   };
 
   componentDidMount() {
-    const { children, enableKeyboardControls } = this.props;
+    const { children, enableKeyboardControls, theme } = this.props;
 
     this.setState(() => ({
-      pageCount: React.Children.count(children)
+      pageCount: React.Children.count(children),
+      theme
     }));
 
     setTimeout(() => {
@@ -73,6 +76,14 @@ class Story extends React.Component {
     }
   }
 
+  componentDidUpdate() {
+    if (this.props.theme !== this.state.theme) {
+      this.setState({
+        theme: this.props.theme
+      });
+    }
+  }
+
   render() {
     const {
       children,
@@ -92,7 +103,8 @@ class Story extends React.Component {
         value={{
           activePage,
           outboundPage,
-          inboundPage
+          inboundPage,
+          handlers
         }}
       >
         <main style={styles.story()}>
@@ -118,18 +130,32 @@ class Story extends React.Component {
 
 export default Story;
 
-export const Page = ({ pageIndex, style, className, children }) => (
+export const Page = ({
+  pageIndex,
+  pageTheme,
+  onInbound = () => {},
+  onActive = () => {},
+  onOutbound = () => {},
+  style,
+  className,
+  children
+}) => (
   <StoryContext.Consumer>
-    {({ activePage, outboundPage, inboundPage }) => {
+    {({ activePage, outboundPage, inboundPage, handlers }) => {
       const isActive = pageIndex === activePage;
       const isOutbound = pageIndex === outboundPage;
       const isInbound = pageIndex === inboundPage;
+      const isPrevious = pageIndex <= activePage;
+
+      if (isInbound) onInbound();
+      if (isActive) onActive();
+      if (isOutbound) onOutbound();
 
       return (
         <div
           className={className}
           style={{
-            ...styles.page({ isActive }),
+            ...styles.page({ isActive, isPrevious }),
             ...style
           }}
         >

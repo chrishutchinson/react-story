@@ -14,14 +14,14 @@ export default {
     flexDirection: "row",
     alignContent: "space-between"
   }),
-  page: ({ isActive }) => ({
+  page: ({ isActive, isPrevious }) => ({
     position: "absolute",
     top: 0,
     left: 0,
     width: "100%",
     height: "100%",
     backgroundColor: "#FFF",
-    opacity: isActive ? 1 : 0
+    opacity: isActive || isPrevious ? 1 : 0
   }),
   progress: () => ({
     position: "absolute",
