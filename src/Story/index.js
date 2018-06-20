@@ -162,7 +162,8 @@ export const Page = ({
           {children({
             isActive,
             isOutbound,
-            isInbound
+            isInbound,
+            handlers
           })}
         </div>
       );
