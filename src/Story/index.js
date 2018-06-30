@@ -146,6 +146,8 @@ export const Page = ({
       const isOutbound = pageIndex === outboundPage;
       const isInbound = pageIndex === inboundPage;
       const isPrevious = pageIndex <= activePage;
+      const isUpcoming =
+        pageIndex === activePage + 1 || pageIndex === activePage - 1;
 
       if (isInbound) onInbound();
       if (isActive) onActive();
@@ -163,6 +165,7 @@ export const Page = ({
             isActive,
             isOutbound,
             isInbound,
+            isUpcoming,
             handlers
           })}
         </div>
